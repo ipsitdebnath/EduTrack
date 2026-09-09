@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "JavaScript Fundamentals",
+    "description": "Core concepts of JavaScript programming",
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 2,
+    "name": "Node.js Basics",
+    "description": "Server-side JavaScript with Node.js",
+    "difficulty": "Beginner"
+  },
+  {
+    "id": 3,
+    "name": "Data Structures",
+    "description": "Essential data structures for programming",
+    "difficulty": "Intermediate"
+  }
+]

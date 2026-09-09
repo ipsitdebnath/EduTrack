@@ -1,0 +1,20 @@
+{
+  "name": "skillpath",
+  "version": "1.0.0",
+  "description": "SkillPath - Learning Path & Progress Tracking System",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "learning",
+    "progress-tracking",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
