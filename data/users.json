@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "Ipsit",
+    "email": "abc@gmail.com",
+    "password": "abcd",
+    "role": "instructor"
+  },
+  {
+    "id": 2,
+    "name": "Messi",
+    "email": "messi@gmail.com",
+    "password": "abcd",
+    "role": "learner"
+  }
+]

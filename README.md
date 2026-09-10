@@ -48,16 +48,24 @@ EduTrack/
 ├── .gitignore          # Files ignored by Git
 ├── README.md           # This file
 ├── data/               # JSON data files (our prototype database)
-│   └── skills.json     # Sample skills data
+│   ├── skills.json     # Sample skills data
+│   └── users.json      # Registered user accounts
 └── src/                # Application source code
     ├── menu.js         # Terminal menu and display functions
-    └── dataHelper.js   # Functions to read/write JSON data files
+    ├── dataHelper.js   # Functions to read/write JSON data files
+    └── auth.js         # User registration and login logic
 ```
 
 ## How the JSON Data Layer Works
 
-Instead of a traditional database, this application uses JSON files stored in the `data/` folder. The `src/dataHelper.js` module provides helper functions to read these files. Node.js built-in `fs` (file system) module reads the file, and `JSON.parse()` converts the text into JavaScript objects.
+Instead of a traditional database, this application uses JSON files stored in the `data/` folder. The `src/dataHelper.js` module provides helper functions to read and write these files. Node.js built-in `fs` (file system) module reads/writes the file, and `JSON.parse()` / `JSON.stringify()` converts between text and JavaScript objects.
+
+## Security Note
+
+In this prototype, passwords are stored as plain text in the JSON file. This is **NOT safe for production**. A real application should hash passwords using a library like `bcrypt` before storing them. Hashing converts the password into a fixed-length string that cannot be reversed.
 
 ## Development Progress
 
 - **Day 1:** Project foundation — CLI app, sample data, folder structure
+- **Day 2:** User registration, login, and role-based menus (Instructor / Learner)
+

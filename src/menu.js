@@ -1,6 +1,6 @@
 // menu.js
 // This module handles the terminal user interface — the welcome screen,
-// the main menu, and reading user input.
+// the main menu, role-based dashboards, and reading user input.
 
 const readlineSync = require('readline-sync');
 
@@ -20,17 +20,16 @@ function showWelcome() {
 /**
  * Displays the main menu options and returns the user's choice.
  *
- * How it works:
- * 1. We print each menu option with a number
- * 2. readlineSync.question() pauses the program and waits for the user to type
- * 3. The user's input is returned as a string
- * 4. We use trim() to remove any extra spaces the user might have typed
+ * Updated in Day 2 to include Register and Login options.
+ * The menu now has 4 options instead of the original 2.
  *
- * @returns {string} The user's menu choice (e.g., "1" or "2")
+ * @returns {string} The user's menu choice (e.g., "1", "2", "3", or "4")
  */
 function showMainMenu() {
-  console.log('  1. View Sample Skills');
-  console.log('  2. Exit');
+  console.log('  1. Register');
+  console.log('  2. Login');
+  console.log('  3. View Sample Skills');
+  console.log('  4. Exit');
   console.log('');
 
   // readlineSync.question() displays the prompt and waits for user input
@@ -70,5 +69,116 @@ function displaySkills(skills) {
   readlineSync.question('  Press ENTER to return to the menu...');
 }
 
+/**
+ * Displays the Instructor Dashboard menu and handles choices.
+ *
+ * The instructor sees options for creating and viewing learning paths.
+ * For Day 2, these are placeholder options — the actual implementation
+ * will be done on Day 3.
+ *
+ * The dashboard runs in its own loop. When the instructor chooses
+ * "Logout", the function returns, which takes them back to the main menu.
+ *
+ * @param {Object} user - The logged-in user object
+ */
+function showInstructorDashboard(user) {
+  // Dashboard loop — keeps running until the instructor logs out
+  while (true) {
+    console.log('');
+    console.log('========================================');
+    console.log('        INSTRUCTOR DASHBOARD            ');
+    console.log('========================================');
+    console.log(`  Logged in as: ${user.name}`);
+    console.log('');
+    console.log('  1. Create Learning Path');
+    console.log('  2. View Learning Paths');
+    console.log('  3. Logout');
+    console.log('');
+
+    const choice = readlineSync.question('  Enter your choice: ').trim();
+
+    if (choice === '1') {
+      // Placeholder — will be implemented on Day 3
+      console.log('');
+      console.log('  This feature will be implemented on Day 3.');
+      console.log('');
+    } else if (choice === '2') {
+      // Placeholder — will be implemented on Day 3
+      console.log('');
+      console.log('  This feature will be implemented on Day 3.');
+      console.log('');
+    } else if (choice === '3') {
+      // Logout — exit the dashboard loop and return to the main menu
+      console.log('');
+      console.log('  Logged out successfully.');
+      console.log('');
+      return;
+    } else {
+      console.log('');
+      console.log('  Invalid choice. Please enter 1, 2, or 3.');
+      console.log('');
+    }
+  }
+}
+
+/**
+ * Displays the Learner Dashboard menu and handles choices.
+ *
+ * The learner sees options for browsing learning paths and viewing progress.
+ * For Day 2, these are placeholder options — the actual implementation
+ * will be done in later days.
+ *
+ * The dashboard runs in its own loop. When the learner chooses
+ * "Logout", the function returns, which takes them back to the main menu.
+ *
+ * @param {Object} user - The logged-in user object
+ */
+function showLearnerDashboard(user) {
+  // Dashboard loop — keeps running until the learner logs out
+  while (true) {
+    console.log('');
+    console.log('========================================');
+    console.log('          LEARNER DASHBOARD             ');
+    console.log('========================================');
+    console.log(`  Logged in as: ${user.name}`);
+    console.log('');
+    console.log('  1. Browse Learning Paths');
+    console.log('  2. My Progress');
+    console.log('  3. Logout');
+    console.log('');
+
+    const choice = readlineSync.question('  Enter your choice: ').trim();
+
+    if (choice === '1') {
+      // Placeholder — will be implemented in a later day
+      console.log('');
+      console.log('  This feature will be implemented on Day 3.');
+      console.log('');
+    } else if (choice === '2') {
+      // Placeholder — will be implemented in a later day
+      console.log('');
+      console.log('  This feature will be implemented on Day 3.');
+      console.log('');
+    } else if (choice === '3') {
+      // Logout — exit the dashboard loop and return to the main menu
+      console.log('');
+      console.log('  Logged out successfully.');
+      console.log('');
+      return;
+    } else {
+      console.log('');
+      console.log('  Invalid choice. Please enter 1, 2, or 3.');
+      console.log('');
+    }
+  }
+}
+
 // Export all functions so app.js can use them
-module.exports = { showWelcome, showMainMenu, displaySkills };
+module.exports = {
+  showWelcome,
+  showMainMenu,
+  displaySkills,
+  showInstructorDashboard,
+  showLearnerDashboard
+};
+
