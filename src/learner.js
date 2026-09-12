@@ -684,23 +684,34 @@ function studyTopic(user, path, topic) {
       }
     }
 
+    // Calculate study time for this topic from study sessions
+    const sessions = loadData(SESSIONS_FILE);
+    let topicStudyMinutes = 0;
+    for (let s = 0; s < sessions.length; s++) {
+      if (sessions[s].learnerId === user.id && sessions[s].topicId === topic.id) {
+        topicStudyMinutes += sessions[s].durationMinutes;
+      }
+    }
+
     // Display the topic header
     console.log('');
     console.log('========================================');
-    console.log('           STUDY TOPIC                  ');
+    console.log('  ' + topic.title.toUpperCase());
     console.log('========================================');
     console.log('');
-    console.log('  Topic: ' + topic.title);
 
     if (isCompleted) {
       console.log('  Status: ✓ Completed');
     } else {
-      console.log('  Status: ○ Not completed');
+      console.log('  Status: ○ In Progress');
     }
 
+    console.log('  Study Time: ' + formatStudyTime(topicStudyMinutes));
     console.log('');
 
-    // Display resources
+    // Display resources with type-appropriate labels
+    // PDFs and Word Documents use "Location" (file path)
+    // Videos, Academic Literature, and External Links use "URL"
     console.log('  Resources:');
     console.log('');
 
@@ -708,7 +719,18 @@ function studyTopic(user, path, topic) {
       console.log('  (No resources available for this topic)');
     } else {
       for (let r = 0; r < topicResources.length; r++) {
-        console.log('  ' + (r + 1) + '. ' + topicResources[r].title + ' [' + topicResources[r].type + ']');
+        const res = topicResources[r];
+        console.log('  ' + (r + 1) + '. ' + res.title);
+        console.log('     Type: ' + res.type);
+
+        // Use "Location" for file-based resources, "URL" for web-based ones
+        if (res.type === 'PDF' || res.type === 'Word Document') {
+          console.log('     Location: ' + res.location);
+        } else {
+          console.log('     URL: ' + res.location);
+        }
+
+        console.log('');
       }
     }
 
@@ -749,9 +771,16 @@ function studyTopic(user, path, topic) {
       const selectedResource = topicResources[choiceNum - 1];
       console.log('');
       console.log('  ----------------------------------------');
-      console.log('  Resource: ' + selectedResource.title);
+      console.log('  ' + selectedResource.title);
       console.log('  Type: ' + selectedResource.type);
-      console.log('  Location: ' + selectedResource.location);
+
+      // Use type-appropriate label for the resource location
+      if (selectedResource.type === 'PDF' || selectedResource.type === 'Word Document') {
+        console.log('  Location: ' + selectedResource.location);
+      } else {
+        console.log('  URL: ' + selectedResource.location);
+      }
+
       console.log('  ----------------------------------------');
       console.log('');
       readlineSync.question('  Press ENTER to continue...');
@@ -1077,9 +1106,502 @@ function myProgress(user) {
   readlineSync.question('  Press ENTER to return...');
 }
 
+// ============================================================
+// FEATURE 10: MY DASHBOARD (Day 5)
+// ============================================================
+
+/**
+ * Displays a polished learner dashboard summarizing all enrolled paths.
+ *
+ * Shows:
+ *   - Welcome message with learner's name
+ *   - Total enrolled learning paths count
+ *   - For each enrolled path:
+ *       - Path name
+ *       - Progress percentage with visual bar
+ *       - Completed topics / total topics
+ *       - Total study time
+ *
+ * All values are calculated from JSON data — nothing is hard-coded.
+ *
+ * @param {Object} user - The logged-in learner's user object
+ */
+function myDashboard(user) {
+  console.log('');
+  console.log('========================================');
+  console.log('             MY DASHBOARD               ');
+  console.log('========================================');
+  console.log('');
+  console.log('  Welcome, ' + user.name + '!');
+  console.log('');
+
+  // Load all needed data
+  const enrollments = loadData(ENROLLMENTS_FILE);
+  const allPaths = loadData(PATHS_FILE);
+  const allTopics = loadData(TOPICS_FILE);
+  const progressData = loadData(PROGRESS_FILE);
+  const sessions = loadData(SESSIONS_FILE);
+
+  // Find this learner's enrollments
+  const myEnrollments = [];
+  for (let i = 0; i < enrollments.length; i++) {
+    if (enrollments[i].learnerId === user.id) {
+      myEnrollments.push(enrollments[i]);
+    }
+  }
+
+  console.log('  Enrolled Learning Paths: ' + myEnrollments.length);
+  console.log('');
+
+  if (myEnrollments.length === 0) {
+    console.log('  You are not enrolled in any learning paths.');
+    console.log('  Use "Browse Learning Paths" to find and enroll in paths.');
+    console.log('');
+    readlineSync.question('  Press ENTER to return...');
+    return;
+  }
+
+  // Display summary for each enrolled path
+  for (let i = 0; i < myEnrollments.length; i++) {
+    const enrollment = myEnrollments[i];
+
+    // Find the learning path object
+    let pathObj = null;
+    for (let p = 0; p < allPaths.length; p++) {
+      if (allPaths[p].id === enrollment.learningPathId) {
+        pathObj = allPaths[p];
+        break;
+      }
+    }
+
+    if (pathObj === null) {
+      continue;
+    }
+
+    // Count total topics in this path
+    const pathTopics = [];
+    for (let t = 0; t < allTopics.length; t++) {
+      if (allTopics[t].learningPathId === pathObj.id) {
+        pathTopics.push(allTopics[t]);
+      }
+    }
+
+    // Count completed topics
+    let completedCount = 0;
+    for (let t = 0; t < pathTopics.length; t++) {
+      for (let pr = 0; pr < progressData.length; pr++) {
+        if (progressData[pr].learnerId === user.id &&
+            progressData[pr].topicId === pathTopics[t].id &&
+            progressData[pr].learningPathId === pathObj.id &&
+            progressData[pr].completed === true) {
+          completedCount++;
+          break;
+        }
+      }
+    }
+
+    // Calculate percentage
+    let percentage = 0;
+    if (pathTopics.length > 0) {
+      percentage = Math.round((completedCount / pathTopics.length) * 100);
+    }
+
+    // Build progress bar (20 characters wide)
+    const barWidth = 20;
+    const filledCount = Math.round((percentage / 100) * barWidth);
+    const emptyCount = barWidth - filledCount;
+
+    let progressBar = '';
+    for (let b = 0; b < filledCount; b++) {
+      progressBar += '█';
+    }
+    for (let b = 0; b < emptyCount; b++) {
+      progressBar += '░';
+    }
+
+    // Calculate total study time for this path
+    let totalStudyMinutes = 0;
+    for (let s = 0; s < sessions.length; s++) {
+      if (sessions[s].learnerId === user.id &&
+          sessions[s].learningPathId === pathObj.id) {
+        totalStudyMinutes += sessions[s].durationMinutes;
+      }
+    }
+
+    // Display path summary
+    console.log('  ' + pathObj.name);
+    console.log('    Progress: ' + percentage + '%');
+    console.log('    ' + progressBar);
+    console.log('    Completed Topics: ' + completedCount + ' / ' + pathTopics.length);
+    console.log('    Total Study Time: ' + formatStudyTime(totalStudyMinutes));
+    console.log('');
+  }
+
+  console.log('========================================');
+  console.log('');
+  readlineSync.question('  Press ENTER to return...');
+}
+
+// ============================================================
+// FEATURE 11: TOPIC-LEVEL STUDY STATISTICS (Day 5)
+// ============================================================
+
+/**
+ * Displays detailed study statistics for each topic within an enrolled path.
+ *
+ * The learner selects an enrolled learning path and sees:
+ *   - Overall progress % and total study time for the path
+ *   - Each topic's completion status (✓ Completed or In Progress)
+ *   - Each topic's study time (sum of all study sessions for that topic)
+ *
+ * This is a direct requirement from the original problem statement:
+ * "Reading/study time for a particular topic."
+ *
+ * Study time is calculated by summing durationMinutes from all matching
+ * records in studySessions.json for the given learner + topic.
+ *
+ * @param {Object} user - The logged-in learner's user object
+ */
+function viewTopicStatistics(user) {
+  console.log('');
+  console.log('========================================');
+  console.log('         TOPIC STUDY STATISTICS          ');
+  console.log('========================================');
+  console.log('');
+
+  // Load data
+  const enrollments = loadData(ENROLLMENTS_FILE);
+  const allPaths = loadData(PATHS_FILE);
+  const allTopics = loadData(TOPICS_FILE);
+  const progressData = loadData(PROGRESS_FILE);
+  const sessions = loadData(SESSIONS_FILE);
+
+  // Find this learner's enrollments
+  const myEnrollments = [];
+  for (let i = 0; i < enrollments.length; i++) {
+    if (enrollments[i].learnerId === user.id) {
+      myEnrollments.push(enrollments[i]);
+    }
+  }
+
+  if (myEnrollments.length === 0) {
+    console.log('  You are not enrolled in any learning paths.');
+    console.log('');
+    readlineSync.question('  Press ENTER to return...');
+    return;
+  }
+
+  // Build list of enrolled paths
+  const enrolledPaths = [];
+  for (let i = 0; i < myEnrollments.length; i++) {
+    let pathObj = null;
+    for (let p = 0; p < allPaths.length; p++) {
+      if (allPaths[p].id === myEnrollments[i].learningPathId) {
+        pathObj = allPaths[p];
+        break;
+      }
+    }
+    if (pathObj !== null) {
+      enrolledPaths.push(pathObj);
+    }
+  }
+
+  // Show list of enrolled paths for selection
+  console.log('  Select a learning path:');
+  console.log('');
+  for (let i = 0; i < enrolledPaths.length; i++) {
+    console.log('  ' + (i + 1) + '. ' + enrolledPaths[i].name);
+  }
+  console.log('');
+  console.log('  0. Back');
+  console.log('');
+
+  const choice = readlineSync.question('  Enter choice: ').trim();
+
+  if (choice === '0') {
+    return;
+  }
+
+  const pathIndex = parseInt(choice, 10) - 1;
+
+  if (isNaN(pathIndex) || pathIndex < 0 || pathIndex >= enrolledPaths.length) {
+    console.log('');
+    console.log('  Invalid choice. Please select a valid option.');
+    console.log('');
+    return;
+  }
+
+  const selectedPath = enrolledPaths[pathIndex];
+
+  // Find topics for this path
+  const pathTopics = [];
+  for (let t = 0; t < allTopics.length; t++) {
+    if (allTopics[t].learningPathId === selectedPath.id) {
+      pathTopics.push(allTopics[t]);
+    }
+  }
+
+  pathTopics.sort(function (a, b) {
+    return a.order - b.order;
+  });
+
+  // Count completed topics
+  let completedCount = 0;
+  for (let t = 0; t < pathTopics.length; t++) {
+    for (let pr = 0; pr < progressData.length; pr++) {
+      if (progressData[pr].learnerId === user.id &&
+          progressData[pr].topicId === pathTopics[t].id &&
+          progressData[pr].learningPathId === selectedPath.id &&
+          progressData[pr].completed === true) {
+        completedCount++;
+        break;
+      }
+    }
+  }
+
+  // Calculate overall percentage
+  let percentage = 0;
+  if (pathTopics.length > 0) {
+    percentage = Math.round((completedCount / pathTopics.length) * 100);
+  }
+
+  // Calculate total study time for this path
+  let totalStudyMinutes = 0;
+  for (let s = 0; s < sessions.length; s++) {
+    if (sessions[s].learnerId === user.id &&
+        sessions[s].learningPathId === selectedPath.id) {
+      totalStudyMinutes += sessions[s].durationMinutes;
+    }
+  }
+
+  // Display the header
+  console.log('');
+  console.log('========================================');
+  console.log('  ' + selectedPath.name.toUpperCase());
+  console.log('========================================');
+  console.log('');
+  console.log('  Overall Progress: ' + percentage + '%');
+  console.log('  Total Study Time: ' + formatStudyTime(totalStudyMinutes));
+  console.log('');
+  console.log('  Topics:');
+  console.log('');
+
+  if (pathTopics.length === 0) {
+    console.log('  (No topics in this path)');
+  } else {
+    // Display each topic with its status and study time
+    for (let t = 0; t < pathTopics.length; t++) {
+      const topic = pathTopics[t];
+
+      // Check completion status
+      let isCompleted = false;
+      for (let pr = 0; pr < progressData.length; pr++) {
+        if (progressData[pr].learnerId === user.id &&
+            progressData[pr].topicId === topic.id &&
+            progressData[pr].learningPathId === selectedPath.id &&
+            progressData[pr].completed === true) {
+          isCompleted = true;
+          break;
+        }
+      }
+
+      // Calculate study time for this specific topic
+      // Sum all study session durations for this learner + topic
+      let topicStudyMinutes = 0;
+      for (let s = 0; s < sessions.length; s++) {
+        if (sessions[s].learnerId === user.id &&
+            sessions[s].topicId === topic.id) {
+          topicStudyMinutes += sessions[s].durationMinutes;
+        }
+      }
+
+      const statusText = isCompleted ? '✓ Completed' : '○ In Progress';
+      console.log('    ' + topic.title);
+      console.log('      Status: ' + statusText);
+      console.log('      Study Time: ' + formatStudyTime(topicStudyMinutes));
+      console.log('');
+    }
+  }
+
+  console.log('========================================');
+  console.log('');
+  readlineSync.question('  Press ENTER to return...');
+}
+
+// ============================================================
+// FEATURE 12: SKILL STUDY/FINISHING TIME (Day 5)
+// ============================================================
+
+/**
+ * Displays total study/finishing time for each skill the learner is studying.
+ *
+ * This addresses the original problem statement requirement:
+ * "Total finishing/study time for a particular skill."
+ *
+ * In our prototype, a "skill" maps to one or more learning paths.
+ * The total study time for a skill is the sum of ALL study sessions
+ * belonging to topics under learning paths associated with that skill.
+ *
+ * This represents accumulated study time — not real-world calendar time.
+ * For a production application, you could also track actual calendar
+ * duration between enrollment and final topic completion.
+ *
+ * @param {Object} user - The logged-in learner's user object
+ */
+function viewSkillStatistics(user) {
+  console.log('');
+  console.log('========================================');
+  console.log('           SKILL STATISTICS              ');
+  console.log('========================================');
+  console.log('');
+
+  // Load data
+  const enrollments = loadData(ENROLLMENTS_FILE);
+  const allPaths = loadData(PATHS_FILE);
+  const allSkills = loadData(SKILLS_FILE);
+  const allTopics = loadData(TOPICS_FILE);
+  const sessions = loadData(SESSIONS_FILE);
+
+  // Find this learner's enrollments
+  const myEnrollments = [];
+  for (let i = 0; i < enrollments.length; i++) {
+    if (enrollments[i].learnerId === user.id) {
+      myEnrollments.push(enrollments[i]);
+    }
+  }
+
+  if (myEnrollments.length === 0) {
+    console.log('  You are not enrolled in any learning paths.');
+    console.log('');
+    readlineSync.question('  Press ENTER to return...');
+    return;
+  }
+
+  // Collect unique skill IDs from enrolled paths
+  // We use an object as a simple lookup to avoid duplicates
+  const skillMap = {};
+
+  for (let i = 0; i < myEnrollments.length; i++) {
+    // Find the path for this enrollment
+    let pathObj = null;
+    for (let p = 0; p < allPaths.length; p++) {
+      if (allPaths[p].id === myEnrollments[i].learningPathId) {
+        pathObj = allPaths[p];
+        break;
+      }
+    }
+
+    if (pathObj === null) {
+      continue;
+    }
+
+    // Find the skill for this path
+    let skillObj = null;
+    for (let s = 0; s < allSkills.length; s++) {
+      if (allSkills[s].id === pathObj.skillId) {
+        skillObj = allSkills[s];
+        break;
+      }
+    }
+
+    if (skillObj === null) {
+      continue;
+    }
+
+    // Group paths under their skill
+    if (!skillMap[skillObj.id]) {
+      skillMap[skillObj.id] = {
+        skill: skillObj,
+        paths: []
+      };
+    }
+
+    skillMap[skillObj.id].paths.push(pathObj);
+  }
+
+  // Display statistics for each skill
+  const skillIds = Object.keys(skillMap);
+
+  if (skillIds.length === 0) {
+    console.log('  No skill data available for your enrolled paths.');
+    console.log('');
+    readlineSync.question('  Press ENTER to return...');
+    return;
+  }
+
+  for (let i = 0; i < skillIds.length; i++) {
+    const entry = skillMap[skillIds[i]];
+    const skill = entry.skill;
+    const paths = entry.paths;
+
+    // Collect all topics under all paths for this skill
+    const skillTopics = [];
+    for (let p = 0; p < paths.length; p++) {
+      for (let t = 0; t < allTopics.length; t++) {
+        if (allTopics[t].learningPathId === paths[p].id) {
+          skillTopics.push(allTopics[t]);
+        }
+      }
+    }
+
+    // Sort topics by order
+    skillTopics.sort(function (a, b) {
+      return a.order - b.order;
+    });
+
+    // Calculate total study time for the skill (sum across all topics)
+    let totalSkillMinutes = 0;
+
+    // Also calculate per-topic study time for the breakdown
+    const topicTimes = [];
+    for (let t = 0; t < skillTopics.length; t++) {
+      let topicMinutes = 0;
+      for (let s = 0; s < sessions.length; s++) {
+        if (sessions[s].learnerId === user.id &&
+            sessions[s].topicId === skillTopics[t].id) {
+          topicMinutes += sessions[s].durationMinutes;
+        }
+      }
+      totalSkillMinutes += topicMinutes;
+      topicTimes.push({
+        topic: skillTopics[t],
+        minutes: topicMinutes
+      });
+    }
+
+    // Display skill statistics
+    console.log('  Skill: ' + skill.name);
+    console.log('  Total Study Time: ' + formatStudyTime(totalSkillMinutes));
+    console.log('');
+    console.log('  Topics:');
+
+    if (topicTimes.length === 0) {
+      console.log('    (No topics)');
+    } else {
+      for (let t = 0; t < topicTimes.length; t++) {
+        // Right-align the time for a cleaner display
+        const topicName = topicTimes[t].topic.title;
+        const timeStr = formatStudyTime(topicTimes[t].minutes);
+        console.log('    ' + topicName + '  —  ' + timeStr);
+      }
+    }
+
+    console.log('');
+    console.log('  ----------------------------------------');
+    console.log('');
+  }
+
+  console.log('========================================');
+  console.log('');
+  readlineSync.question('  Press ENTER to return...');
+}
+
 // Export all learner functions for use in menu.js
 module.exports = {
   browseLearningPaths,
   myLearningPaths,
-  myProgress
+  myProgress,
+  myDashboard,
+  viewTopicStatistics,
+  viewSkillStatistics
 };
