@@ -13,6 +13,11 @@ const {
   addResource,
   viewMyLearningPaths
 } = require('./instructor');
+const {
+  browseLearningPaths,
+  myLearningPaths,
+  myProgress
+} = require('./learner');
 
 /**
  * Displays the welcome banner at the top of the screen.
@@ -152,12 +157,14 @@ function showInstructorDashboard(user) {
 /**
  * Displays the Learner Dashboard menu and handles choices.
  *
- * The learner sees options for browsing learning paths and viewing progress.
- * For Day 2, these are placeholder options — the actual implementation
- * will be done in later days.
+ * Updated on Day 4: The learner now has 4 real options:
+ *   1. Browse Learning Paths — view all available paths and enroll
+ *   2. My Learning Paths     — view enrolled paths and study topics
+ *   3. My Progress           — view progress overview with stats
+ *   4. Logout                — return to main menu
  *
- * The dashboard runs in its own loop. When the learner chooses
- * "Logout", the function returns, which takes them back to the main menu.
+ * Each option (except Logout) calls a function from learner.js.
+ * The dashboard runs in its own loop until the learner logs out.
  *
  * @param {Object} user - The logged-in user object
  */
@@ -171,31 +178,35 @@ function showLearnerDashboard(user) {
     console.log(`  Logged in as: ${user.name}`);
     console.log('');
     console.log('  1. Browse Learning Paths');
-    console.log('  2. My Progress');
-    console.log('  3. Logout');
+    console.log('  2. My Learning Paths');
+    console.log('  3. My Progress');
+    console.log('  4. Logout');
     console.log('');
 
     const choice = readlineSync.question('  Enter your choice: ').trim();
 
     if (choice === '1') {
-      // Placeholder — will be implemented in a later day
-      console.log('');
-      console.log('  This feature will be implemented on Day 3.');
-      console.log('');
+      // Browse all available learning paths and enroll
+      browseLearningPaths(user);
+
     } else if (choice === '2') {
-      // Placeholder — will be implemented in a later day
-      console.log('');
-      console.log('  This feature will be implemented on Day 3.');
-      console.log('');
+      // View enrolled learning paths and study topics
+      myLearningPaths(user);
+
     } else if (choice === '3') {
+      // View progress overview for all enrolled paths
+      myProgress(user);
+
+    } else if (choice === '4') {
       // Logout — exit the dashboard loop and return to the main menu
       console.log('');
       console.log('  Logged out successfully.');
       console.log('');
       return;
+
     } else {
       console.log('');
-      console.log('  Invalid choice. Please enter 1, 2, or 3.');
+      console.log('  Invalid choice. Please enter 1-4.');
       console.log('');
     }
   }
