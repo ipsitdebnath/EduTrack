@@ -670,11 +670,169 @@ function viewMyLearningPaths(user) {
   readlineSync.question('  Press ENTER to return...');
 }
 
-// Export all 5 functions for use in menu.js
+// ============================================================
+// FEATURE 6: VIEW LEARNER PROGRESS (Day 5)
+// ============================================================
+
+/**
+ * Displays progress of learners enrolled in this instructor's learning paths.
+ *
+ * For each of the instructor's learning paths:
+ *   - Lists every learner who is enrolled
+ *   - Shows each learner's progress percentage and total study time
+ *
+ * This allows the instructor to monitor how learners are progressing
+ * through the content they created, without needing a complex analytics
+ * system.
+ *
+ * How it works (important for viva):
+ *   1. Find all learning paths created by this instructor
+ *   2. For each path, find enrollments from enrollments.json
+ *   3. For each enrollment, find the learner from users.json
+ *   4. Count completed topics from progress.json
+ *   5. Sum study time from studySessions.json
+ *
+ * @param {Object} user - The logged-in instructor's user object
+ */
+function viewLearnerProgress(user) {
+  console.log('');
+  console.log('========================================');
+  console.log('          LEARNER PROGRESS              ');
+  console.log('========================================');
+
+  // Load all needed data
+  const allPaths = loadData(PATHS_FILE);
+  const allTopics = loadData(TOPICS_FILE);
+  const allUsers = loadData('users.json');
+  const enrollments = loadData('enrollments.json');
+  const progressData = loadData('progress.json');
+  const sessions = loadData('studySessions.json');
+
+  // Filter to only this instructor's learning paths
+  const myPaths = [];
+  for (let i = 0; i < allPaths.length; i++) {
+    if (allPaths[i].instructorId === user.id) {
+      myPaths.push(allPaths[i]);
+    }
+  }
+
+  if (myPaths.length === 0) {
+    console.log('');
+    console.log('  You have not created any learning paths yet.');
+    console.log('');
+    readlineSync.question('  Press ENTER to return...');
+    return;
+  }
+
+  let hasAnyEnrollments = false;
+
+  // Display progress for each of the instructor's paths
+  for (let p = 0; p < myPaths.length; p++) {
+    const currentPath = myPaths[p];
+
+    // Find topics for this path (to calculate total and progress)
+    const pathTopics = [];
+    for (let t = 0; t < allTopics.length; t++) {
+      if (allTopics[t].learningPathId === currentPath.id) {
+        pathTopics.push(allTopics[t]);
+      }
+    }
+
+    // Find all enrollments for this path
+    const pathEnrollments = [];
+    for (let e = 0; e < enrollments.length; e++) {
+      if (enrollments[e].learningPathId === currentPath.id) {
+        pathEnrollments.push(enrollments[e]);
+      }
+    }
+
+    console.log('');
+    console.log('----------------------------------------');
+    console.log('  Learning Path: ' + currentPath.name);
+    console.log('----------------------------------------');
+
+    if (pathEnrollments.length === 0) {
+      console.log('');
+      console.log('  No learners enrolled yet.');
+      continue;
+    }
+
+    hasAnyEnrollments = true;
+
+    // Display each enrolled learner's progress
+    for (let e = 0; e < pathEnrollments.length; e++) {
+      const enrollment = pathEnrollments[e];
+
+      // Find the learner's user record
+      let learnerName = 'Unknown Learner';
+      for (let u = 0; u < allUsers.length; u++) {
+        if (allUsers[u].id === enrollment.learnerId) {
+          learnerName = allUsers[u].name;
+          break;
+        }
+      }
+
+      // Count completed topics for this learner in this path
+      let completedCount = 0;
+      for (let t = 0; t < pathTopics.length; t++) {
+        for (let pr = 0; pr < progressData.length; pr++) {
+          if (progressData[pr].learnerId === enrollment.learnerId &&
+              progressData[pr].topicId === pathTopics[t].id &&
+              progressData[pr].learningPathId === currentPath.id &&
+              progressData[pr].completed === true) {
+            completedCount++;
+            break;
+          }
+        }
+      }
+
+      // Calculate percentage
+      let percentage = 0;
+      if (pathTopics.length > 0) {
+        percentage = Math.round((completedCount / pathTopics.length) * 100);
+      }
+
+      // Calculate total study time for this learner in this path
+      let totalStudyMinutes = 0;
+      for (let s = 0; s < sessions.length; s++) {
+        if (sessions[s].learnerId === enrollment.learnerId &&
+            sessions[s].learningPathId === currentPath.id) {
+          totalStudyMinutes += sessions[s].durationMinutes;
+        }
+      }
+
+      // Format study time
+      let timeStr = totalStudyMinutes + 'm';
+      if (totalStudyMinutes >= 60) {
+        const hours = Math.floor(totalStudyMinutes / 60);
+        const minutes = totalStudyMinutes % 60;
+        timeStr = hours + 'h ' + minutes + 'm';
+      }
+
+      console.log('');
+      console.log('  Learner: ' + learnerName);
+      console.log('    Progress: ' + percentage + '% (' + completedCount + '/' + pathTopics.length + ' topics)');
+      console.log('    Study Time: ' + timeStr);
+    }
+  }
+
+  if (!hasAnyEnrollments) {
+    console.log('');
+    console.log('  No learners have enrolled in any of your paths yet.');
+  }
+
+  console.log('');
+  console.log('========================================');
+  console.log('');
+  readlineSync.question('  Press ENTER to return...');
+}
+
+// Export all 6 functions for use in menu.js
 module.exports = {
   createSkill,
   createLearningPath,
   addTopic,
   addResource,
-  viewMyLearningPaths
+  viewMyLearningPaths,
+  viewLearnerProgress
 };
