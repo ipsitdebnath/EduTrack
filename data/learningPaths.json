@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "skillId": 4,
+    "instructorId": 1,
+    "name": "Python Beginner Path",
+    "description": "learn from basic",
+    "createdAt": "2026-09-12T07:41:22.357Z"
+  },
+  {
+    "id": 2,
+    "skillId": 4,
+    "instructorId": 1,
+    "name": "Python Beginner Path",
+    "description": "",
+    "createdAt": "2026-09-12T07:48:27.721Z"
+  }
+]

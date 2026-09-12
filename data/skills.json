@@ -16,5 +16,12 @@
     "name": "Data Structures",
     "description": "Essential data structures for programming",
     "difficulty": "Intermediate"
+  },
+  {
+    "id": 4,
+    "name": "Python Programming",
+    "description": "Learn Python programming from basics to OOP",
+    "instructorId": 1,
+    "createdAt": "2026-09-12T07:38:40.443Z"
   }
 ]

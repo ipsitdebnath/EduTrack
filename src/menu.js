@@ -1,8 +1,18 @@
 // menu.js
 // This module handles the terminal user interface — the welcome screen,
 // the main menu, role-based dashboards, and reading user input.
+//
+// Updated on Day 3: The instructor dashboard now has real functionality
+// instead of placeholders. It calls functions from instructor.js.
 
 const readlineSync = require('readline-sync');
+const {
+  createSkill,
+  createLearningPath,
+  addTopic,
+  addResource,
+  viewMyLearningPaths
+} = require('./instructor');
 
 /**
  * Displays the welcome banner at the top of the screen.
@@ -72,12 +82,16 @@ function displaySkills(skills) {
 /**
  * Displays the Instructor Dashboard menu and handles choices.
  *
- * The instructor sees options for creating and viewing learning paths.
- * For Day 2, these are placeholder options — the actual implementation
- * will be done on Day 3.
+ * Updated on Day 3: The instructor now has 6 real options:
+ *   1. Create Skill        — define a new skill area
+ *   2. Create Learning Path — create a path under a skill
+ *   3. Add Topic            — add topics to a learning path
+ *   4. Add Resource         — attach resources to topics
+ *   5. View My Learning Paths — see the full tree view
+ *   6. Logout               — return to main menu
  *
- * The dashboard runs in its own loop. When the instructor chooses
- * "Logout", the function returns, which takes them back to the main menu.
+ * Each option (except Logout) calls a function from instructor.js.
+ * The dashboard runs in its own loop until the instructor logs out.
  *
  * @param {Object} user - The logged-in user object
  */
@@ -90,32 +104,46 @@ function showInstructorDashboard(user) {
     console.log('========================================');
     console.log(`  Logged in as: ${user.name}`);
     console.log('');
-    console.log('  1. Create Learning Path');
-    console.log('  2. View Learning Paths');
-    console.log('  3. Logout');
+    console.log('  1. Create Skill');
+    console.log('  2. Create Learning Path');
+    console.log('  3. Add Topic');
+    console.log('  4. Add Resource');
+    console.log('  5. View My Learning Paths');
+    console.log('  6. Logout');
     console.log('');
 
     const choice = readlineSync.question('  Enter your choice: ').trim();
 
     if (choice === '1') {
-      // Placeholder — will be implemented on Day 3
-      console.log('');
-      console.log('  This feature will be implemented on Day 3.');
-      console.log('');
+      // Create a new skill (e.g., "Python Programming")
+      createSkill(user);
+
     } else if (choice === '2') {
-      // Placeholder — will be implemented on Day 3
-      console.log('');
-      console.log('  This feature will be implemented on Day 3.');
-      console.log('');
+      // Create a learning path under one of the instructor's skills
+      createLearningPath(user);
+
     } else if (choice === '3') {
+      // Add a topic to one of the instructor's learning paths
+      addTopic(user);
+
+    } else if (choice === '4') {
+      // Add a resource (PDF, Video, etc.) to a topic
+      addResource(user);
+
+    } else if (choice === '5') {
+      // View all learning paths with their topics and resources
+      viewMyLearningPaths(user);
+
+    } else if (choice === '6') {
       // Logout — exit the dashboard loop and return to the main menu
       console.log('');
       console.log('  Logged out successfully.');
       console.log('');
       return;
+
     } else {
       console.log('');
-      console.log('  Invalid choice. Please enter 1, 2, or 3.');
+      console.log('  Invalid choice. Please enter 1-6.');
       console.log('');
     }
   }

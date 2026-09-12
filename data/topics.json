@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "learningPathId": 1,
+    "title": "Python Basics",
+    "description": "",
+    "order": 1
+  },
+  {
+    "id": 2,
+    "learningPathId": 1,
+    "title": "Variables and Data Types",
+    "description": "",
+    "order": 2
+  },
+  {
+    "id": 3,
+    "learningPathId": 1,
+    "title": "Functions",
+    "description": "",
+    "order": 3
+  }
+]

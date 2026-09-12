@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "topicId": 1,
+    "title": "Python Basics Notes",
+    "type": "PDF",
+    "location": "resources/python-basics.pdf"
+  },
+  {
+    "id": 2,
+    "topicId": 1,
+    "title": "Introduction to Python Video",
+    "type": "Video",
+    "location": "https://youtube.com/python-intro"
+  }
+]
