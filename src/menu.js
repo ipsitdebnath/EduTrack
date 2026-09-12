@@ -4,6 +4,10 @@
 //
 // Updated on Day 3: The instructor dashboard now has real functionality
 // instead of placeholders. It calls functions from instructor.js.
+//
+// Updated on Day 5: Both dashboards expanded with new features:
+//   - Instructor: View Learner Progress
+//   - Learner: My Dashboard, Topic Statistics, Skill Statistics
 
 const readlineSync = require('readline-sync');
 const {
@@ -11,12 +15,16 @@ const {
   createLearningPath,
   addTopic,
   addResource,
-  viewMyLearningPaths
+  viewMyLearningPaths,
+  viewLearnerProgress
 } = require('./instructor');
 const {
   browseLearningPaths,
   myLearningPaths,
-  myProgress
+  myProgress,
+  myDashboard,
+  viewTopicStatistics,
+  viewSkillStatistics
 } = require('./learner');
 
 /**
@@ -73,7 +81,9 @@ function displaySkills(skills) {
     console.log('');
     console.log(`  #${skill.id}  ${skill.name}`);
     console.log(`      Description : ${skill.description}`);
-    console.log(`      Difficulty  : ${skill.difficulty}`);
+    if (skill.difficulty) {
+      console.log(`      Difficulty  : ${skill.difficulty}`);
+    }
   }
 
   console.log('');
@@ -87,13 +97,17 @@ function displaySkills(skills) {
 /**
  * Displays the Instructor Dashboard menu and handles choices.
  *
- * Updated on Day 3: The instructor now has 6 real options:
+ * Updated on Day 3: The instructor now has real functionality.
+ * Updated on Day 5: Added option 6 (View Learner Progress).
+ *
+ * Options:
  *   1. Create Skill        — define a new skill area
  *   2. Create Learning Path — create a path under a skill
  *   3. Add Topic            — add topics to a learning path
  *   4. Add Resource         — attach resources to topics
  *   5. View My Learning Paths — see the full tree view
- *   6. Logout               — return to main menu
+ *   6. View Learner Progress  — see enrolled learners' progress (Day 5)
+ *   7. Logout               — return to main menu
  *
  * Each option (except Logout) calls a function from instructor.js.
  * The dashboard runs in its own loop until the instructor logs out.
@@ -114,7 +128,8 @@ function showInstructorDashboard(user) {
     console.log('  3. Add Topic');
     console.log('  4. Add Resource');
     console.log('  5. View My Learning Paths');
-    console.log('  6. Logout');
+    console.log('  6. View Learner Progress');
+    console.log('  7. Logout');
     console.log('');
 
     const choice = readlineSync.question('  Enter your choice: ').trim();
@@ -140,6 +155,10 @@ function showInstructorDashboard(user) {
       viewMyLearningPaths(user);
 
     } else if (choice === '6') {
+      // View learner progress for this instructor's paths (Day 5)
+      viewLearnerProgress(user);
+
+    } else if (choice === '7') {
       // Logout — exit the dashboard loop and return to the main menu
       console.log('');
       console.log('  Logged out successfully.');
@@ -148,7 +167,7 @@ function showInstructorDashboard(user) {
 
     } else {
       console.log('');
-      console.log('  Invalid choice. Please enter 1-6.');
+      console.log('  Invalid choice. Please enter 1-7.');
       console.log('');
     }
   }
@@ -157,11 +176,17 @@ function showInstructorDashboard(user) {
 /**
  * Displays the Learner Dashboard menu and handles choices.
  *
- * Updated on Day 4: The learner now has 4 real options:
- *   1. Browse Learning Paths — view all available paths and enroll
- *   2. My Learning Paths     — view enrolled paths and study topics
- *   3. My Progress           — view progress overview with stats
- *   4. Logout                — return to main menu
+ * Updated on Day 4: Added browse, study, and progress features.
+ * Updated on Day 5: Added My Dashboard, Topic Statistics, Skill Statistics.
+ *
+ * Options:
+ *   1. My Dashboard        — summary of enrolled paths with progress (Day 5)
+ *   2. Browse Learning Paths — view all available paths and enroll
+ *   3. My Learning Paths   — view enrolled paths and study topics
+ *   4. My Progress         — view progress overview with stats
+ *   5. Topic Statistics    — per-topic study time breakdown (Day 5)
+ *   6. Skill Statistics    — total skill study/finishing time (Day 5)
+ *   7. Logout              — return to main menu
  *
  * Each option (except Logout) calls a function from learner.js.
  * The dashboard runs in its own loop until the learner logs out.
@@ -177,27 +202,42 @@ function showLearnerDashboard(user) {
     console.log('========================================');
     console.log(`  Logged in as: ${user.name}`);
     console.log('');
-    console.log('  1. Browse Learning Paths');
-    console.log('  2. My Learning Paths');
-    console.log('  3. My Progress');
-    console.log('  4. Logout');
+    console.log('  1. My Dashboard');
+    console.log('  2. Browse Learning Paths');
+    console.log('  3. My Learning Paths');
+    console.log('  4. My Progress');
+    console.log('  5. Topic Statistics');
+    console.log('  6. Skill Statistics');
+    console.log('  7. Logout');
     console.log('');
 
     const choice = readlineSync.question('  Enter your choice: ').trim();
 
     if (choice === '1') {
+      // Show the polished dashboard summary (Day 5)
+      myDashboard(user);
+
+    } else if (choice === '2') {
       // Browse all available learning paths and enroll
       browseLearningPaths(user);
 
-    } else if (choice === '2') {
+    } else if (choice === '3') {
       // View enrolled learning paths and study topics
       myLearningPaths(user);
 
-    } else if (choice === '3') {
+    } else if (choice === '4') {
       // View progress overview for all enrolled paths
       myProgress(user);
 
-    } else if (choice === '4') {
+    } else if (choice === '5') {
+      // View topic-level study statistics (Day 5)
+      viewTopicStatistics(user);
+
+    } else if (choice === '6') {
+      // View skill-level study/finishing time (Day 5)
+      viewSkillStatistics(user);
+
+    } else if (choice === '7') {
       // Logout — exit the dashboard loop and return to the main menu
       console.log('');
       console.log('  Logged out successfully.');
@@ -206,7 +246,7 @@ function showLearnerDashboard(user) {
 
     } else {
       console.log('');
-      console.log('  Invalid choice. Please enter 1-4.');
+      console.log('  Invalid choice. Please enter 1-7.');
       console.log('');
     }
   }
@@ -220,4 +260,3 @@ module.exports = {
   showInstructorDashboard,
   showLearnerDashboard
 };
-
