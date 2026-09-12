@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": 1,
+    "learnerId": 2,
+    "topicId": 1,
+    "learningPathId": 1,
+    "durationMinutes": 70,
+    "startTime": "2026-09-12T20:28:16.663Z",
+    "endTime": "2026-09-12T21:38:16.663Z"
+  },
+  {
+    "id": 2,
+    "learnerId": 2,
+    "topicId": 2,
+    "learningPathId": 1,
+    "durationMinutes": 45,
+    "startTime": "2026-09-12T20:53:16.663Z",
+    "endTime": "2026-09-12T21:38:16.663Z"
+  },
+  {
+    "id": 3,
+    "learnerId": 2,
+    "topicId": 3,
+    "learningPathId": 1,
+    "durationMinutes": 65,
+    "startTime": "2026-09-12T20:33:16.663Z",
+    "endTime": "2026-09-12T21:38:16.663Z"
+  },
+  {
+    "id": 4,
+    "learnerId": 2,
+    "topicId": 4,
+    "learningPathId": 1,
+    "durationMinutes": 45,
+    "startTime": "2026-09-12T20:53:16.663Z",
+    "endTime": "2026-09-12T21:38:16.663Z"
+  }
+]

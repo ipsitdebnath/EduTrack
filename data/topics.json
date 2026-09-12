@@ -18,6 +18,13 @@
     "learningPathId": 1,
     "title": "Functions",
     "description": "",
+    "order": 4
+  },
+  {
+    "id": 4,
+    "learningPathId": 1,
+    "title": "Loops",
+    "description": "For loops, while loops, and loop control",
     "order": 3
   }
 ]

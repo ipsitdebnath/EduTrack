@@ -12,5 +12,47 @@
     "title": "Introduction to Python Video",
     "type": "Video",
     "location": "https://youtube.com/python-intro"
+  },
+  {
+    "id": 3,
+    "topicId": 1,
+    "title": "Python Research Paper",
+    "type": "Academic Literature",
+    "location": "https://example.com/python-research-paper"
+  },
+  {
+    "id": 4,
+    "topicId": 2,
+    "title": "Variables Guide",
+    "type": "Word Document",
+    "location": "resources/variables-guide.docx"
+  },
+  {
+    "id": 5,
+    "topicId": 2,
+    "title": "Data Types Video",
+    "type": "Video",
+    "location": "https://youtube.com/data-types-tutorial"
+  },
+  {
+    "id": 6,
+    "topicId": 3,
+    "title": "Loops Tutorial",
+    "type": "External Link",
+    "location": "https://example.com/loops-tutorial"
+  },
+  {
+    "id": 7,
+    "topicId": 4,
+    "title": "Functions Cheat Sheet",
+    "type": "PDF",
+    "location": "resources/functions-cheatsheet.pdf"
+  },
+  {
+    "id": 8,
+    "topicId": 4,
+    "title": "Functions Deep Dive",
+    "type": "Video",
+    "location": "https://youtube.com/functions-deep-dive"
   }
 ]
