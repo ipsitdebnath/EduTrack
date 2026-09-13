@@ -63,7 +63,7 @@ function registerUser() {
   // Collect user information from terminal input
   const name = readlineSync.question('  Name: ');
   const email = readlineSync.question('  Email: ');
-  const password = readlineSync.question('  Password: ', { hideEchoBack: true });
+  const password = readlineSync.question('  Password: ', { mask: '*' });
 
   // Validate that all fields are filled in
   if (!name.trim() || !email.trim() || !password.trim()) {
@@ -157,7 +157,7 @@ function loginUser() {
 
   // Collect login credentials
   const email = readlineSync.question('  Email: ');
-  const password = readlineSync.question('  Password: ', { hideEchoBack: true });
+  const password = readlineSync.question('  Password: ', { mask: '*' });
 
   // Load all users from the JSON file
   const users = loadData(USERS_FILE);
