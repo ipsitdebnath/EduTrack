@@ -720,8 +720,8 @@ function studyTopic(user, path, topic) {
     } else {
       for (let r = 0; r < topicResources.length; r++) {
         const res = topicResources[r];
-        console.log('  ' + (r + 1) + '. ' + res.title);
-        console.log('     Type: ' + res.type);
+        console.log('  • ' + res.title);
+        console.log('    Type: ' + res.type);
 
         // Use "Location" for file-based resources, "URL" for web-based ones
         if (res.type === 'PDF' || res.type === 'Word Document') {
@@ -738,68 +738,29 @@ function studyTopic(user, path, topic) {
     console.log('----------------------------------------');
     console.log('');
 
-    // Show options
-    if (topicResources.length > 0) {
-      console.log('  ' + (topicResources.length + 1) + '. Start Study Session');
-      console.log('  ' + (topicResources.length + 2) + '. Mark Topic Complete');
-      console.log('  ' + (topicResources.length + 3) + '. Back');
-    } else {
-      console.log('  1. Start Study Session');
-      console.log('  2. Mark Topic Complete');
-      console.log('  3. Back');
-    }
+    // Show options — fixed numbering (resources are display-only above)
+    console.log('  1. Start Study Session');
+    console.log('  2. Mark Topic Complete');
+    console.log('  3. Back');
 
     console.log('');
     const choice = readlineSync.question('  Enter choice: ').trim();
-    const choiceNum = parseInt(choice, 10);
 
-    if (isNaN(choiceNum)) {
-      console.log('');
-      console.log('  Error: Invalid choice.');
-      console.log('');
-      continue;
-    }
-
-    // Determine what the user selected based on the dynamic numbering
-    // Resources are numbered 1..N, then Study Session, Mark Complete, Back
-    const studySessionNum = topicResources.length + 1;
-    const markCompleteNum = topicResources.length + 2;
-    const backNum = topicResources.length + 3;
-
-    if (choiceNum >= 1 && choiceNum <= topicResources.length) {
-      // User selected a resource — display its details
-      const selectedResource = topicResources[choiceNum - 1];
-      console.log('');
-      console.log('  ----------------------------------------');
-      console.log('  ' + selectedResource.title);
-      console.log('  Type: ' + selectedResource.type);
-
-      // Use type-appropriate label for the resource location
-      if (selectedResource.type === 'PDF' || selectedResource.type === 'Word Document') {
-        console.log('  Location: ' + selectedResource.location);
-      } else {
-        console.log('  URL: ' + selectedResource.location);
-      }
-
-      console.log('  ----------------------------------------');
-      console.log('');
-      readlineSync.question('  Press ENTER to continue...');
-
-    } else if (choiceNum === studySessionNum) {
+    if (choice === '1') {
       // Start a study session
       startStudySession(user, path, topic);
 
-    } else if (choiceNum === markCompleteNum) {
+    } else if (choice === '2') {
       // Mark the topic as complete
       markTopicComplete(user, path, topic);
 
-    } else if (choiceNum === backNum) {
+    } else if (choice === '3') {
       // Go back to the topic list
       return;
 
     } else {
       console.log('');
-      console.log('  Error: Invalid choice.');
+      console.log('  Error: Invalid choice. Please enter 1, 2, or 3.');
       console.log('');
     }
   }

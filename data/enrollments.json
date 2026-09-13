@@ -4,5 +4,11 @@
     "learnerId": 2,
     "learningPathId": 1,
     "enrolledAt": "2026-09-12T21:38:16.662Z"
+  },
+  {
+    "id": 2,
+    "learnerId": 2,
+    "learningPathId": 2,
+    "enrolledAt": "2026-09-13T06:30:47.818Z"
   }
 ]

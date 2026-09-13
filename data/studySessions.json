@@ -34,5 +34,14 @@
     "durationMinutes": 45,
     "startTime": "2026-09-12T20:53:16.663Z",
     "endTime": "2026-09-12T21:38:16.663Z"
+  },
+  {
+    "id": 5,
+    "learnerId": 2,
+    "topicId": 5,
+    "learningPathId": 2,
+    "startTime": "2026-09-13T06:32:38.961Z",
+    "endTime": "2026-09-13T06:32:49.611Z",
+    "durationMinutes": 0
   }
 ]
