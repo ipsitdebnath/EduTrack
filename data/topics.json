@@ -26,5 +26,26 @@
     "title": "Loops",
     "description": "For loops, while loops, and loop control",
     "order": 3
+  },
+  {
+    "id": 5,
+    "learningPathId": 2,
+    "title": "Frontend Foundations (HTML & CSS)",
+    "description": "Semantic HTML and Responsive CSS",
+    "order": 1
+  },
+  {
+    "id": 6,
+    "learningPathId": 2,
+    "title": "JavaScript & DOM Manipulation",
+    "description": "ES6 syntax and event handling",
+    "order": 2
+  },
+  {
+    "id": 7,
+    "learningPathId": 2,
+    "title": "Backend APIs with Node & Express",
+    "description": "RESTful API design and middleware",
+    "order": 3
   }
 ]

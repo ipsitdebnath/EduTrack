@@ -9,10 +9,10 @@
   },
   {
     "id": 2,
-    "skillId": 4,
+    "skillId": 5,
     "instructorId": 1,
-    "name": "Python Beginner Path",
-    "description": "",
-    "createdAt": "2026-09-12T07:48:27.721Z"
+    "name": "MERN Stack Roadmap",
+    "description": "From fundamentals to full stack deployment",
+    "createdAt": "2026-09-13T06:19:58.299Z"
   }
 ]

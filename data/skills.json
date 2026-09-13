@@ -23,5 +23,12 @@
     "description": "Learn Python programming from basics to OOP",
     "instructorId": 1,
     "createdAt": "2026-09-12T07:38:40.443Z"
+  },
+  {
+    "id": 5,
+    "name": "Full Stack Web Development",
+    "description": "Frontend, backend, and database architecture",
+    "instructorId": 1,
+    "createdAt": "2026-09-13T06:17:32.435Z"
   }
 ]

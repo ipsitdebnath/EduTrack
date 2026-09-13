@@ -459,17 +459,7 @@ function addResource(user) {
   const selectedTopic = pathTopics[topicIndex];
 
   // Step 3: Collect resource details
-  console.log('');
-  const title = readlineSync.question('  Resource title: ');
-
-  if (!title.trim()) {
-    console.log('');
-    console.log('  Error: Resource title cannot be empty.');
-    console.log('');
-    return;
-  }
-
-  // Show the supported resource types
+  // First, select the resource type
   console.log('');
   console.log('  Resource type:');
   console.log('');
@@ -490,6 +480,17 @@ function addResource(user) {
   }
 
   const selectedType = RESOURCE_TYPES[typeIndex];
+
+  // Then, ask for the resource title
+  console.log('');
+  const title = readlineSync.question('  Resource title: ');
+
+  if (!title.trim()) {
+    console.log('');
+    console.log('  Error: Resource title cannot be empty.');
+    console.log('');
+    return;
+  }
 
   // Ask for the file path or URL
   // For PDFs/Word docs, this might be a local path like "resources/notes.pdf"

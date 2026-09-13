@@ -54,5 +54,12 @@
     "title": "Functions Deep Dive",
     "type": "Video",
     "location": "https://youtube.com/functions-deep-dive"
+  },
+  {
+    "id": 9,
+    "topicId": 5,
+    "title": "HTML & CSS Cheatsheet",
+    "type": "PDF",
+    "location": "resources/html-css-cheatsheet.pdf"
   }
 ]
